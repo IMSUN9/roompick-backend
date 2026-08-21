@@ -38,7 +38,17 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       connect-timeout: ${REDIS_CONNECT_TIMEOUT:300ms}
-      timeout: ${REDIS_TIMEOUT:300ms}
+      # 인증된 모든 요청이 거치는 블랙리스트 조회(JwtAuthenticationFilter)가
+      # 이 값을 쓴다. 동시 요청이 몰릴 때 대기가 길어지는 것보다는
+      # 빠르게 실패시키는 쪽이 안전해서 짧게 유지하고, 대신 아래 커넥션
+      # 풀로 동시 처리량 자체를 늘린다.
+      timeout: ${REDIS_TIMEOUT:500ms}
+      lettuce:
+        pool:
+          max-active: ${REDIS_POOL_MAX_ACTIVE:16}
+          max-idle: ${REDIS_POOL_MAX_IDLE:16}
+          min-idle: ${REDIS_POOL_MIN_IDLE:4}
+          max-wait: ${REDIS_POOL_MAX_WAIT:500ms}
 
 portone:
   api:
